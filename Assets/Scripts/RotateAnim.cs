@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -28,11 +29,11 @@ public class RotateAnim : MonoBehaviour
 
     private void OnMouseDown()
     {
-        //Debug.Log("mouse click");
-        StartCoroutine(FlapLid());
+        Debug.Log("mouse click");
+        StartCoroutine(RotateCube());
     }
 
-    IEnumerator FlapLid()
+    IEnumerator RotateCube()
     {
         // Lockout any attempt to start another FlapLid while
         // one is already running.
@@ -98,7 +99,9 @@ public class RotateAnim : MonoBehaviour
 
             // Set the X angle to however much rotation is done so far.
 
-            transform.localRotation = Quaternion.Lerp(rotClosed, rotOpened, interpolationParameter);
+            //transform.localRotation = Quaternion.Lerp(rotClosed, rotOpened, interpolationParameter);
+            float rot = Mathf.Lerp(angleClosed, angleOpened, interpolationParameter);
+            transform.localRotation = Quaternion.Euler(0, rot, 0);
 
             // Tell Unity to start us up again at some future time.
 
