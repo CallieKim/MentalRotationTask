@@ -14,7 +14,9 @@ public class NoAnimationManager : MonoBehaviour
 
     // array to store cubes
     public GameObject[] cubes;
+    public GameObject[] cubes_noWire;
     GameObject pair;
+    GameObject pair_noWire;
     // num to use in array
     int num = 0;
 
@@ -31,6 +33,10 @@ public class NoAnimationManager : MonoBehaviour
         cubes[0].gameObject.SetActive(false);
         cubes[1].gameObject.SetActive(false);
         cubes[2].gameObject.SetActive(false);
+        cubes_noWire[0].gameObject.SetActive(false);
+        cubes_noWire[1].gameObject.SetActive(false);
+        cubes_noWire[2].gameObject.SetActive(false);
+        pairState.GetComponent<Text>().text = "";
     }
 
     // Update is called once per frame
@@ -48,7 +54,9 @@ public class NoAnimationManager : MonoBehaviour
         {
             timer = timer + seconds;
             cubes[num].gameObject.SetActive(false);
+            cubes_noWire[num].gameObject.SetActive(false);
             pair.gameObject.SetActive(false);
+            pair_noWire.gameObject.SetActive(false);
             num++;
             //when num reaches last cube, stop training
             if (num == 3)
@@ -60,6 +68,7 @@ public class NoAnimationManager : MonoBehaviour
             else
             {
                 cubes[num].gameObject.SetActive(true);
+                cubes_noWire[num].gameObject.SetActive(true);
                 createPair();
             }
 
@@ -70,6 +79,7 @@ public class NoAnimationManager : MonoBehaviour
     {
         //Debug.Log("start");
         cubes[0].gameObject.SetActive(true);
+        cubes_noWire[0].gameObject.SetActive(true);
         createPair();
         buttonStart.gameObject.SetActive(false);
         training_start = true;
@@ -80,7 +90,9 @@ public class NoAnimationManager : MonoBehaviour
     public void createPair()
     {
         pair = GameObject.Instantiate(cubes[num]);
+        pair_noWire = GameObject.Instantiate(cubes_noWire[num]);
         pair.transform.position = new Vector3(7, 0, 0);
+        pair_noWire.transform.position = new Vector3(7, 0, 0);
         // need to randomize mirrored and rotation
         // if mirrored is true, flip horizontally
         // random range is min inclusive and max exclusive
@@ -89,12 +101,15 @@ public class NoAnimationManager : MonoBehaviour
         {
             pair.transform.localScale = new Vector3(-1, 1, 1);
             pair.transform.rotation = Quaternion.Euler(0, rot, 0);
+            pair_noWire.transform.localScale = new Vector3(-1, 1, 1);
+            pair_noWire.transform.rotation = Quaternion.Euler(0, rot, 0);
             pairState.GetComponent<Text>().text = "Flipped "+rot.ToString()+" degrees";
 
         }
         else
         {
             pair.transform.rotation = Quaternion.Euler(0, rot, 0);
+            pair_noWire.transform.rotation = Quaternion.Euler(0, rot, 0);
             pairState.GetComponent<Text>().text = "Rotated " + rot.ToString() + " degrees";
         }
     }

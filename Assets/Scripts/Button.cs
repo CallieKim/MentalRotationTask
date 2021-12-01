@@ -62,7 +62,7 @@ public class Button : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.LeftArrow) && training_start)
         {
             //Debug.Log("left");
-            buttonYes.GetComponent<Image>().color = Color.red;
+            //buttonYes.GetComponent<Image>().color = Color.red;
 
             question.GetComponent<Text>().text = "Are these two shapes the same except their rotations?";
 
@@ -71,10 +71,12 @@ public class Button : MonoBehaviour
             if(mirrored)
             {
                 Debug.Log("Wrong, reaction time : " + (update_time - curr_time).ToString());
+                buttonYes.GetComponent<Image>().color = Color.red;
             }
             else
             {
                 Debug.Log("Correct, reaction time : " + (update_time - curr_time).ToString());
+                buttonYes.GetComponent<Image>().color = Color.green;
             }
 
             curr_time = update_time;
@@ -110,7 +112,7 @@ public class Button : MonoBehaviour
         else if(Input.GetKeyDown(KeyCode.RightArrow) && training_start)
         {
             //Debug.Log("right");
-            buttonNo.GetComponent<Image>().color = Color.red;
+            //buttonNo.GetComponent<Image>().color = Color.red;
 
             question.GetComponent<Text>().text = "Are these two shapes the same except their rotations?";
 
@@ -119,10 +121,12 @@ public class Button : MonoBehaviour
             if (mirrored)
             {
                 Debug.Log("Correct, reaction time : " + (update_time - curr_time).ToString());
+                buttonNo.GetComponent<Image>().color = Color.green;
             }
             else
             {
                 Debug.Log("Wrong, reaction time : " + (update_time - curr_time).ToString());
+                buttonNo.GetComponent<Image>().color = Color.red;
             }
 
             curr_time = update_time;
@@ -188,13 +192,13 @@ public class Button : MonoBehaviour
         {
             pair.transform.localScale = new Vector3(-1, 1, 1);
             pair.transform.rotation = Quaternion.Euler(0, angles[rot_num], 0);
-            pairState.GetComponent<Text>().text = "Flipped " + angles[rot_num].ToString() + " degrees";
+            //pairState.GetComponent<Text>().text = "Flipped " + angles[rot_num].ToString() + " degrees";
 
         }
         else
         {
             pair.transform.rotation = Quaternion.Euler(0, angles[rot_num], 0);
-            pairState.GetComponent<Text>().text = "Rotated " + angles[rot_num].ToString() + " degrees";
+            //pairState.GetComponent<Text>().text = "Rotated " + angles[rot_num].ToString() + " degrees";
         }
     }
 }
