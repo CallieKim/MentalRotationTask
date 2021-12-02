@@ -42,6 +42,11 @@ public class NoAnimationManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // training start
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            TrainingStart();
+        }
         if (Input.GetKey(KeyCode.Escape))
         {
             //Debug.Log("exit game");

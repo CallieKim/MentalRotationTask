@@ -31,14 +31,17 @@ public class Button : MonoBehaviour
     // data to save to csv file for data collection
     struct TrialData
     {
-        public int trial;
-        public GameObject cube;
+        //public int trial;
+        //public GameObject cube;
         public float reactionTime;
-        public int angle;
+        //public int angle;
         // correct is true if selected the right answer
         public bool correct;
     }
 
+    // linked list to store Trial data..
+    LinkedList<TrialData> dataList = new LinkedList<TrialData>();
+    TrialData data;
 
     // Start is called before the first frame update
     void Start()
@@ -54,12 +57,18 @@ public class Button : MonoBehaviour
         buttonNo.gameObject.SetActive(false);
         buttonYes.gameObject.SetActive(false);
         pairState.GetComponent<Text>().text = "";
+        data = new TrialData();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.LeftArrow) && training_start)
+        // training start
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            TrainingStart();
+        }
+        if (Input.GetKeyDown(KeyCode.LeftArrow) && training_start)
         {
             //Debug.Log("left");
             //buttonYes.GetComponent<Image>().color = Color.red;
@@ -70,12 +79,18 @@ public class Button : MonoBehaviour
 
             if(mirrored)
             {
-                Debug.Log("Wrong, reaction time : " + (update_time - curr_time).ToString());
+                data.reactionTime = update_time - curr_time;
+                data.correct = false;
+                Debug.Log("Wrong, reaction time : " + (data.reactionTime).ToString());
+                dataList.AddLast(data);
                 buttonYes.GetComponent<Image>().color = Color.red;
             }
             else
             {
-                Debug.Log("Correct, reaction time : " + (update_time - curr_time).ToString());
+                data.reactionTime = update_time - curr_time;
+                data.correct = false;
+                Debug.Log("Correct, reaction time : " + (data.reactionTime).ToString());
+                dataList.AddLast(data);
                 buttonYes.GetComponent<Image>().color = Color.green;
             }
 
@@ -97,6 +112,7 @@ public class Button : MonoBehaviour
                 else
                 {
                     training_start = false;
+
                 }
             }
             else
