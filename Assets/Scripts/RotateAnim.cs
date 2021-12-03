@@ -27,11 +27,11 @@ public class RotateAnim : MonoBehaviour
         rotClosed = Quaternion.Euler(0, angleClosed, 0);
     }
 
-/*    private void OnMouseDown()
+    private void OnMouseDown()
     {
         Debug.Log("mouse click");
         StartCoroutine(RotateCube());
-    }*/
+    }
 
     private void Update()
     {

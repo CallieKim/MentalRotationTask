@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
 
 public class Button : MonoBehaviour
 {
@@ -20,6 +21,8 @@ public class Button : MonoBehaviour
     public int trial = 1;
     public int num_cubes = 8;
     public GameObject[] cubes;
+    public GameObject[] cubes_right;
+    //public GameObject[] cubes2 = cubes.Clone();
     GameObject pair;
     public int[] angles;
     int num = 0;
@@ -39,9 +42,27 @@ public class Button : MonoBehaviour
         public bool correct;
     }
 
+    public struct ObjectConfig
+    {
+        public GameObject gobject;
+        public int rotation_degree;
+        public bool flipped;
+    }
+
+    public struct ObjectPairConfig
+    {
+        public ObjectConfig leftObject;
+        public ObjectConfig rightObject;
+    }
+
     // linked list to store Trial data..
     LinkedList<TrialData> dataList = new LinkedList<TrialData>();
     TrialData data;
+
+    // Shubamb
+    LinkedList<ObjectPairConfig> configList;
+    LinkedListNode<ObjectPairConfig> head;
+    LinkedListNode<ObjectPairConfig> temp;
 
     // Start is called before the first frame update
     void Start()
@@ -58,6 +79,9 @@ public class Button : MonoBehaviour
         buttonYes.gameObject.SetActive(false);
         pairState.GetComponent<Text>().text = "";
         data = new TrialData();
+        configList = getPairList();
+        //Debug.Log(configList.First.Value.leftObject.gobject);
+        //Debug.Log(configList.First.Next.Value.leftObject.gobject);
     }
 
     // Update is called once per frame
@@ -77,13 +101,13 @@ public class Button : MonoBehaviour
 
             update_time = Time.time;
 
-            if(mirrored)
+            if(temp.Value.rightObject.gobject.transform.localScale.x * temp.Value.leftObject.gobject.transform.localScale.x == 1)
             {
                 data.reactionTime = update_time - curr_time;
                 data.correct = false;
                 Debug.Log("Wrong, reaction time : " + (data.reactionTime).ToString());
                 dataList.AddLast(data);
-                buttonYes.GetComponent<Image>().color = Color.red;
+                buttonYes.GetComponent<Image>().color = Color.green;
             }
             else
             {
@@ -91,35 +115,29 @@ public class Button : MonoBehaviour
                 data.correct = false;
                 Debug.Log("Correct, reaction time : " + (data.reactionTime).ToString());
                 dataList.AddLast(data);
-                buttonYes.GetComponent<Image>().color = Color.green;
+                buttonYes.GetComponent<Image>().color = Color.red;
             }
 
             curr_time = update_time;
 
-            cubes[num].gameObject.SetActive(false);
-            pair.gameObject.SetActive(false);
-            num++;
-            if(num == 5)
+            temp.Value.leftObject.gobject.gameObject.SetActive(false);
+            temp.Value.rightObject.gobject.gameObject.SetActive(false);
+            Debug.Log(temp.Value.leftObject.gobject);
+            temp = temp.Next;
+            if (temp == null)
             {
-                pairState.GetComponent<Text>().text = "";
-                if(trial < trials)
-                {
-                    trial++;
-                    num = 0;
-                    //question.GetComponent<Text>().text = "Press right or left to continue";
-                    TrainingStart();
-                }
-                else
-                {
-                    training_start = false;
+                training_start = false;
+            }
+            temp.Value.leftObject.gobject.gameObject.SetActive(true);
+            temp.Value.leftObject.gobject.transform.rotation = Quaternion.Euler(0, temp.Value.leftObject.rotation_degree, 0);
+            temp.Value.rightObject.gobject.gameObject.SetActive(true);
+            temp.Value.rightObject.gobject.transform.position = new Vector3(3, 0, 12);
+            if (temp.Value.rightObject.flipped)
+            {
+                temp.Value.rightObject.gobject.transform.localScale = new Vector3(temp.Value.rightObject.gobject.transform.localScale.x * -1, 1, 1);
+            }
+            temp.Value.rightObject.gobject.transform.rotation = Quaternion.Euler(0, temp.Value.rightObject.rotation_degree, 0);
 
-                }
-            }
-            else
-            {
-                cubes[num].gameObject.SetActive(true);
-                createPair();
-            }
         }
         else if(Input.GetKeyUp(KeyCode.LeftArrow))
         {
@@ -134,7 +152,7 @@ public class Button : MonoBehaviour
 
             update_time = Time.time;
 
-            if (mirrored)
+            if (temp.Value.rightObject.gobject.transform.localScale.x * temp.Value.leftObject.gobject.transform.localScale.x == -1)
             {
                 Debug.Log("Correct, reaction time : " + (update_time - curr_time).ToString());
                 buttonNo.GetComponent<Image>().color = Color.green;
@@ -147,29 +165,25 @@ public class Button : MonoBehaviour
 
             curr_time = update_time;
 
-            cubes[num].gameObject.SetActive(false);
-            pair.gameObject.SetActive(false);
-            num++;
-            if (num == 5)
+            temp.Value.leftObject.gobject.gameObject.SetActive(false);
+            temp.Value.rightObject.gobject.gameObject.SetActive(false);
+            //Debug.Log(temp.Value.leftObject.gobject);
+            temp = temp.Next;
+            if(temp==null)
             {
-                pairState.GetComponent<Text>().text = "";
-                if (trial < trials)
-                {
-                    trial++;
-                    num = 0;
-                    //question.GetComponent<Text>().text = "Press right or left to continue";
-                    TrainingStart();
-                }
-                else
-                {
-                    training_start = false;
-                }
+                training_start = false;
             }
-            else
+            temp.Value.leftObject.gobject.gameObject.SetActive(true);
+            temp.Value.leftObject.gobject.transform.rotation = Quaternion.Euler(0, temp.Value.leftObject.rotation_degree, 0);
+            temp.Value.rightObject.gobject.gameObject.SetActive(true);
+            temp.Value.rightObject.gobject.transform.position = new Vector3(3, 0, 12);
+            Debug.Log(temp.Value.rightObject.flipped);
+            if (temp.Value.rightObject.flipped)
             {
-                cubes[num].gameObject.SetActive(true);
-                createPair();
+                temp.Value.rightObject.gobject.transform.localScale = new Vector3(temp.Value.rightObject.gobject.transform.localScale.x * -1, 1, 1);
             }
+            temp.Value.rightObject.gobject.transform.rotation = Quaternion.Euler(0, temp.Value.rightObject.rotation_degree, 0);
+
         }
         else if (Input.GetKeyUp(KeyCode.RightArrow))
         {
@@ -181,6 +195,8 @@ public class Button : MonoBehaviour
             UnityEditor.EditorApplication.isPlaying = false;
             Application.Quit();
         }
+
+
     }
 
     public void TrainingStart()
@@ -188,33 +204,144 @@ public class Button : MonoBehaviour
         //Debug.Log("start");
         buttonNo.gameObject.SetActive(true);
         buttonYes.gameObject.SetActive(true);
-        cubes[0].gameObject.SetActive(true);
-        createPair();
+        //cubes[0].gameObject.SetActive(true);
+        //createPair();
         buttonStart.gameObject.SetActive(false);
         training_start = true;
         curr_time = Time.time;
+
+        head = configList.First;
+        temp = head;
+        //configList.First.Value.leftObject.gobject.gameObject.SetActive(true);
+        head.Value.leftObject.gobject.gameObject.SetActive(true);
+        //configList.First.Value.leftObject.gobject.transform.rotation = Quaternion.Euler(0, configList.First.Value.leftObject.rotation_degree, 0);
+        head.Value.leftObject.gobject.transform.rotation = Quaternion.Euler(0, head.Value.leftObject.rotation_degree, 0);
+        //configList.First.Value.rightObject.gobject.gameObject.SetActive(true);
+        head.Value.rightObject.gobject.gameObject.SetActive(true);
+        //configList.First.Value.rightObject.gobject.transform.position = new Vector3(3, 0, 12);
+        head.Value.rightObject.gobject.transform.position = new Vector3(3, 0, 12);
+        if (head.Value.rightObject.flipped)
+        {
+            head.Value.rightObject.gobject.transform.localScale = new Vector3(-1, 1, 1);
+        }
+        head.Value.rightObject.gobject.transform.rotation = Quaternion.Euler(0, head.Value.rightObject.rotation_degree, 0);
+
     }
 
-    // create pair of cube, angle and mirrored state should be random
-    public void createPair()
+    public LinkedList<ObjectPairConfig> getPairList()
     {
-        pair = GameObject.Instantiate(cubes[num]);
-        pair.transform.position = new Vector3(7, 0, 0);
-        // need to randomize mirrored and rotation
-        // if mirrored is true, flip horizontally
-        // random range is min inclusive and max exclusive
-        int rot_num = Random.Range(0, 5);
-        if (mirrored = (Random.value > 0.5f))
+
+        LinkedList<ObjectPairConfig> allTrialObjectPairConfigList = new LinkedList<ObjectPairConfig>();
+
+        for (int trial = 0; trial < 3; trial++)
         {
-            pair.transform.localScale = new Vector3(-1, 1, 1);
-            pair.transform.rotation = Quaternion.Euler(0, angles[rot_num], 0);
-            //pairState.GetComponent<Text>().text = "Flipped " + angles[rot_num].ToString() + " degrees";
+
+            LinkedList<ObjectPairConfig> trialObjectPairConfigList = new LinkedList<ObjectPairConfig>();
+
+            for (int obj = 0; obj < 5; obj++)
+            {
+
+                List<int> firstRotationList = new List<int>() { 10, 50, 90, 130, 170 };
+                //List<int> secondRotationList = new List<int>() { 10, 50, 90, 130, 170 };
+
+                for (int firstRotationIndex = 0; firstRotationIndex < 4; firstRotationIndex++)
+                {
+                    ObjectConfig leftObject = new ObjectConfig();   // there are two objects on the canvas screen leftObject and rightObject
+                    leftObject.gobject = cubes[obj];
+                    leftObject.rotation_degree = firstRotationList[firstRotationIndex];
+                    leftObject.flipped = false;
+
+                    for (int secondRotationIndex = firstRotationIndex + 1; secondRotationIndex < 5; secondRotationIndex++)
+                    {
+                        ObjectConfig rightObject = new ObjectConfig();
+                        rightObject.gobject = cubes_right[obj];
+                        rightObject.rotation_degree = firstRotationList[secondRotationIndex];
+                        rightObject.flipped = false;
+
+                        ObjectConfig rightObjectFlipped = new ObjectConfig();
+                        rightObjectFlipped.gobject = cubes_right[obj];
+                        rightObjectFlipped.rotation_degree = firstRotationList[secondRotationIndex];
+                        rightObjectFlipped.flipped = true;
+
+                        ObjectPairConfig objectPairConfig = new ObjectPairConfig();
+                        objectPairConfig.leftObject = leftObject;
+                        objectPairConfig.rightObject = rightObject;
+
+                        ObjectPairConfig objectPairFlippedConfig = new ObjectPairConfig();
+                        objectPairFlippedConfig.leftObject = leftObject;
+                        objectPairFlippedConfig.rightObject = rightObjectFlipped;
+
+                        trialObjectPairConfigList.AddLast(objectPairConfig);
+                        //Debug.Log(objectPairConfig.leftObject.gobject);
+                        trialObjectPairConfigList.AddLast(objectPairFlippedConfig);
+                        //Debug.Log(objectPairFlippedConfig.leftObject.gobject);
+                    }
+                }
+            }
+            LinkedList<ObjectPairConfig> perumutedObjectPairConfigList = shuffle(trialObjectPairConfigList);
+
+            foreach (var item in perumutedObjectPairConfigList)
+            {
+                allTrialObjectPairConfigList.AddLast(item);
+                //Debug.Log(item.leftObject.gobject);
+            }
 
         }
-        else
+        return allTrialObjectPairConfigList;
+    }
+
+    public LinkedList<ObjectPairConfig> shuffle(LinkedList<ObjectPairConfig> list)
+    {
+        //Random Rand = new Random();
+
+        List<int> numlist = new List<int>();
+        for(int i =0; i<300; i++)
         {
-            pair.transform.rotation = Quaternion.Euler(0, angles[rot_num], 0);
-            //pairState.GetComponent<Text>().text = "Rotated " + angles[rot_num].ToString() + " degrees";
+            numlist.Add(i);
+        }
+        int size = numlist.Count;
+
+        //Shuffle the list
+
+
+        //list = list.OrderBy<ObjectPairConfig>(x => Random.value).ToList();
+        //Shuffle<int>(numlist);
+        // shuffle index
+        IListExtensions.Shuffle<int>(numlist);
+        return list;
+    }
+    /*
+    public void Shuffle(List<int> list)
+    {
+        //Random rng = new Random();
+        int n = list.Count;
+        while (n > 1)
+        {
+            n--;
+            int k = rng.Next(n + 1);
+            T value = list[k];
+            list[k] = list[n];
+            list[n] = value;
+        }
+    }
+    */
+}
+
+public static class IListExtensions
+{
+    /// <summary>
+    /// Shuffles the element order of the specified list.
+    /// </summary>
+    public static void Shuffle<T>(this List<T> ts)
+    {
+        var count = ts.Count;
+        var last = count - 1;
+        for (var i = 0; i < last; ++i)
+        {
+            var r = UnityEngine.Random.Range(i, count);
+            var tmp = ts[i];
+            ts[i] = ts[r];
+            ts[r] = tmp;
         }
     }
 }
