@@ -27,6 +27,8 @@ public class FullyInteractManager : MonoBehaviour
         cubes[0].gameObject.SetActive(false);
         cubes[1].gameObject.SetActive(false);
         cubes[2].gameObject.SetActive(false);
+        cubes[3].gameObject.SetActive(false);
+        cubes[4].gameObject.SetActive(false);
     }
 
     // Update is called once per frame
@@ -52,7 +54,7 @@ public class FullyInteractManager : MonoBehaviour
             cubes[num].gameObject.SetActive(false);
             num++;
             //when num reaches last cube, stop training
-            if (num == 3)
+            if (num == 5)
             {
                 training_start = false;
 

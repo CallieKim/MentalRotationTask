@@ -27,100 +27,108 @@ public class RotateAnim : MonoBehaviour
         rotClosed = Quaternion.Euler(0, angleClosed, 0);
     }
 
+    /*
     private void OnMouseDown()
     {
         Debug.Log("mouse click");
         StartCoroutine(RotateCube());
     }
-
+    */
     private void Update()
     {
+        /*
         if(Input.GetKeyDown(KeyCode.Space))
         {
             //Debug.Log("pressed space");
             StartCoroutine(RotateCube());
         }
+        */
     }
 
 
 
-    IEnumerator RotateCube()
+    public IEnumerator RotateCube()
     {
-        // Lockout any attempt to start another FlapLid while
-        // one is already running.
-
-
-        if (isFlapping)
+        // while loop for continous rotation
+        while (true)
         {
-            // other coRoutines will be able to change direction and then break
-            // also need to change isClosed to make sure that no error occurs when lid is fully closed or opened
-            changeSign *= -1;
-            isClosed = !isClosed;
 
-            yield break;
-        }
-
-        // Start the animation and lockout others.
-
-        isFlapping = true;
-
-        // Vary this from zero to one, or from one to zero,
-        // to interpolate between our quaternions.
-
-        float interpolationParameter;
-
-        // Set this according to whether we are going from zero
-        // to one, or from one to zero.
-
-        //float changeSign;
-
-        // Set lerp parameter to match our state, and the sign
-        // of the change to either increase or decrease the
-        // lerp parameter during animation.
-
-        if (isClosed)
-        {
-            interpolationParameter = 0;
-            changeSign = 1;
-        }
-        else
-        {
-            interpolationParameter = 1;
-            changeSign = -1;
-        }
-
-        while (isFlapping)
-        {
-            // Change our "lerp" parameter according to speed and time,
-            // and according to whether we are opening or closing.
-
-            interpolationParameter = interpolationParameter + changeSign * Time.deltaTime / flapTime;
-
-            // At or past either end of the lerp parameter's range means
-            // we are on our last step.
-
-            if (interpolationParameter >= 1 || interpolationParameter <= 0)
+            // Lockout any attempt to start another FlapLid while
+            // one is already running.
+            if (isFlapping)
             {
-                // Clamp the lerp parameter.
+                // other coRoutines will be able to change direction and then break
+                // also need to change isClosed to make sure that no error occurs when lid is fully closed or opened
+                changeSign *= -1;
+                isClosed = !isClosed;
 
-                interpolationParameter = Mathf.Clamp(interpolationParameter, 0, 1);
-
-                isFlapping = false; // Signal the loop to stop after this.
+                yield break;
             }
 
-            // Set the X angle to however much rotation is done so far.
+            // Start the animation and lockout others.
 
-            //transform.localRotation = Quaternion.Lerp(rotClosed, rotOpened, interpolationParameter);
-            float rot = Mathf.Lerp(angleClosed, angleOpened, interpolationParameter);
-            transform.localRotation = Quaternion.Euler(0, rot, 0);
+            isFlapping = true;
 
-            // Tell Unity to start us up again at some future time.
+            // Vary this from zero to one, or from one to zero,
+            // to interpolate between our quaternions.
+
+            float interpolationParameter;
+
+            // Set this according to whether we are going from zero
+            // to one, or from one to zero.
+
+            //float changeSign;
+
+            // Set lerp parameter to match our state, and the sign
+            // of the change to either increase or decrease the
+            // lerp parameter during animation.
+
+            if (isClosed)
+            {
+                interpolationParameter = 0;
+                changeSign = 1;
+            }
+            else
+            {
+                interpolationParameter = 1;
+                changeSign = -1;
+            }
+
+            while (isFlapping)
+            {
+                // Change our "lerp" parameter according to speed and time,
+                // and according to whether we are opening or closing.
+
+                interpolationParameter = interpolationParameter + changeSign * Time.deltaTime / flapTime;
+
+                // At or past either end of the lerp parameter's range means
+                // we are on our last step.
+
+                if (interpolationParameter >= 1 || interpolationParameter <= 0)
+                {
+                    // Clamp the lerp parameter.
+
+                    interpolationParameter = Mathf.Clamp(interpolationParameter, 0, 1);
+
+                    isFlapping = false; // Signal the loop to stop after this.
+                }
+
+                // Set the X angle to however much rotation is done so far.
+
+                //transform.localRotation = Quaternion.Lerp(rotClosed, rotOpened, interpolationParameter);
+                float rot = Mathf.Lerp(angleClosed, angleOpened, interpolationParameter);
+                transform.localRotation = Quaternion.Euler(0, rot, 0);
+
+                // Tell Unity to start us up again at some future time.
+
+                yield return null;
+            }
+
+            
+            // if enabled, changes direction after 1 rotation
+            //isClosed = !isClosed;
 
             yield return null;
         }
-
-        // Toggle our open/closed state.
-
-        isClosed = !isClosed;
     }
 }

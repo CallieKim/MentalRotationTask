@@ -28,6 +28,8 @@ public class AnimationManager : MonoBehaviour
         cubes[0].gameObject.SetActive(false);
         cubes[1].gameObject.SetActive(false);
         cubes[2].gameObject.SetActive(false);
+        cubes[3].gameObject.SetActive(false);
+        cubes[4].gameObject.SetActive(false);
     }
 
     // Update is called once per frame
@@ -52,7 +54,7 @@ public class AnimationManager : MonoBehaviour
             cubes[num].gameObject.SetActive(false);
             num++;
             //when num reaches last cube, stop training
-            if (num == 3)
+            if (num == 5)
             {
                 training_start = false;
 
@@ -60,6 +62,8 @@ public class AnimationManager : MonoBehaviour
             else
             {
                 cubes[num].gameObject.SetActive(true);
+                // automatically starts rotation
+                StartCoroutine(cubes[num].GetComponent<RotateAnim>().RotateCube());
             }
 
         }
@@ -69,6 +73,7 @@ public class AnimationManager : MonoBehaviour
     {
         //Debug.Log("start");
         cubes[0].gameObject.SetActive(true);
+        StartCoroutine(cubes[0].GetComponent<RotateAnim>().RotateCube());
         buttonStart.gameObject.SetActive(false);
         training_start = true;
         timer = Time.time;

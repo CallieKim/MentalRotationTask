@@ -15,6 +15,7 @@ public class Button : MonoBehaviour
 
     float curr_time;
     float update_time;
+    bool pause = false;
 
     // randomizing trials
     public int trials;
@@ -61,6 +62,7 @@ public class Button : MonoBehaviour
 
     // Shubamb
     LinkedList<ObjectPairConfig> configList;
+    public List<ObjectPairConfig> configList_notlinked;
     LinkedListNode<ObjectPairConfig> head;
     LinkedListNode<ObjectPairConfig> temp;
 
@@ -79,9 +81,27 @@ public class Button : MonoBehaviour
         buttonYes.gameObject.SetActive(false);
         pairState.GetComponent<Text>().text = "";
         data = new TrialData();
+
+        // Gets 300 pairs in a linked list
         configList = getPairList();
-        //Debug.Log(configList.First.Value.leftObject.gobject);
-        //Debug.Log(configList.First.Next.Value.leftObject.gobject);
+        // convert it to a normal list for permuation..accessing intex of list
+        // shuffle the list then convert back to linked list
+        configList_notlinked = configList.ToList();
+        var count = configList_notlinked.Count;
+        var last = count - 1;
+        for (var i = 0; i < last; ++i)
+        {
+            var r = UnityEngine.Random.Range(i, count);
+            var tmp = configList_notlinked[i];
+            configList_notlinked[i] = configList_notlinked[r];
+            configList_notlinked[r] = tmp;
+        }
+        /*
+        for(int i =0; i< configList_notlinked.Count; i++)
+        {
+            Debug.Log(configList_notlinked[i].leftObject.rotation_degree);
+        } */
+        configList = new LinkedList<ObjectPairConfig>(configList_notlinked);
     }
 
     // Update is called once per frame
@@ -92,7 +112,7 @@ public class Button : MonoBehaviour
         {
             TrainingStart();
         }
-        if (Input.GetKeyDown(KeyCode.LeftArrow) && training_start)
+        if (Input.GetKeyDown(KeyCode.LeftArrow) && training_start && !pause)
         {
             //Debug.Log("left");
             //buttonYes.GetComponent<Image>().color = Color.red;
@@ -122,7 +142,7 @@ public class Button : MonoBehaviour
 
             temp.Value.leftObject.gobject.gameObject.SetActive(false);
             temp.Value.rightObject.gobject.gameObject.SetActive(false);
-            Debug.Log(temp.Value.leftObject.gobject);
+            //Debug.Log(temp.Value.leftObject.gobject);
             temp = temp.Next;
             if (temp == null)
             {
@@ -143,7 +163,7 @@ public class Button : MonoBehaviour
         {
             buttonYes.GetComponent<Image>().color = Color.white;
         }
-        else if(Input.GetKeyDown(KeyCode.RightArrow) && training_start)
+        else if(Input.GetKeyDown(KeyCode.RightArrow) && training_start && !pause)
         {
             //Debug.Log("right");
             //buttonNo.GetComponent<Image>().color = Color.red;
@@ -177,7 +197,7 @@ public class Button : MonoBehaviour
             temp.Value.leftObject.gobject.transform.rotation = Quaternion.Euler(0, temp.Value.leftObject.rotation_degree, 0);
             temp.Value.rightObject.gobject.gameObject.SetActive(true);
             temp.Value.rightObject.gobject.transform.position = new Vector3(3, 0, 12);
-            Debug.Log(temp.Value.rightObject.flipped);
+            //Debug.Log(temp.Value.rightObject.flipped);
             if (temp.Value.rightObject.flipped)
             {
                 temp.Value.rightObject.gobject.transform.localScale = new Vector3(temp.Value.rightObject.gobject.transform.localScale.x * -1, 1, 1);
@@ -189,11 +209,23 @@ public class Button : MonoBehaviour
         {
             buttonNo.GetComponent<Image>().color = Color.white;
         }
-        else if(Input.GetKey(KeyCode.Escape))
+        // pause game, just in case participant gets tired
+        else if(Input.GetKeyDown(KeyCode.Escape))
         {
             //Debug.Log("exit game");
-            UnityEditor.EditorApplication.isPlaying = false;
-            Application.Quit();
+            //UnityEditor.EditorApplication.isPlaying = false;
+            //Application.Quit();
+            pause = !pause;
+            if(pause)
+            {
+                pairState.GetComponent<Text>().text = "Paused";
+                Time.timeScale = 0;
+            }
+            else
+            {
+                pairState.GetComponent<Text>().text = "";
+                Time.timeScale = 1;
+            }
         }
 
 
@@ -204,21 +236,16 @@ public class Button : MonoBehaviour
         //Debug.Log("start");
         buttonNo.gameObject.SetActive(true);
         buttonYes.gameObject.SetActive(true);
-        //cubes[0].gameObject.SetActive(true);
-        //createPair();
         buttonStart.gameObject.SetActive(false);
         training_start = true;
         curr_time = Time.time;
 
         head = configList.First;
         temp = head;
-        //configList.First.Value.leftObject.gobject.gameObject.SetActive(true);
+
         head.Value.leftObject.gobject.gameObject.SetActive(true);
-        //configList.First.Value.leftObject.gobject.transform.rotation = Quaternion.Euler(0, configList.First.Value.leftObject.rotation_degree, 0);
         head.Value.leftObject.gobject.transform.rotation = Quaternion.Euler(0, head.Value.leftObject.rotation_degree, 0);
-        //configList.First.Value.rightObject.gobject.gameObject.SetActive(true);
         head.Value.rightObject.gobject.gameObject.SetActive(true);
-        //configList.First.Value.rightObject.gobject.transform.position = new Vector3(3, 0, 12);
         head.Value.rightObject.gobject.transform.position = new Vector3(3, 0, 12);
         if (head.Value.rightObject.flipped)
         {
@@ -244,7 +271,7 @@ public class Button : MonoBehaviour
                 List<int> firstRotationList = new List<int>() { 10, 50, 90, 130, 170 };
                 //List<int> secondRotationList = new List<int>() { 10, 50, 90, 130, 170 };
 
-                for (int firstRotationIndex = 0; firstRotationIndex < 4; firstRotationIndex++)
+                for (int firstRotationIndex = 0; firstRotationIndex < 5; firstRotationIndex++)
                 {
                     ObjectConfig leftObject = new ObjectConfig();   // there are two objects on the canvas screen leftObject and rightObject
                     leftObject.gobject = cubes[obj];
@@ -278,6 +305,7 @@ public class Button : MonoBehaviour
                     }
                 }
             }
+
             LinkedList<ObjectPairConfig> perumutedObjectPairConfigList = shuffle(trialObjectPairConfigList);
 
             foreach (var item in perumutedObjectPairConfigList)
@@ -290,10 +318,10 @@ public class Button : MonoBehaviour
         return allTrialObjectPairConfigList;
     }
 
+
+
     public LinkedList<ObjectPairConfig> shuffle(LinkedList<ObjectPairConfig> list)
     {
-        //Random Rand = new Random();
-
         List<int> numlist = new List<int>();
         for(int i =0; i<300; i++)
         {
@@ -301,30 +329,11 @@ public class Button : MonoBehaviour
         }
         int size = numlist.Count;
 
-        //Shuffle the list
-
-
-        //list = list.OrderBy<ObjectPairConfig>(x => Random.value).ToList();
-        //Shuffle<int>(numlist);
         // shuffle index
         IListExtensions.Shuffle<int>(numlist);
+
         return list;
     }
-    /*
-    public void Shuffle(List<int> list)
-    {
-        //Random rng = new Random();
-        int n = list.Count;
-        while (n > 1)
-        {
-            n--;
-            int k = rng.Next(n + 1);
-            T value = list[k];
-            list[k] = list[n];
-            list[n] = value;
-        }
-    }
-    */
 }
 
 public static class IListExtensions
@@ -335,6 +344,7 @@ public static class IListExtensions
     public static void Shuffle<T>(this List<T> ts)
     {
         var count = ts.Count;
+        //Debug.Log(count);
         var last = count - 1;
         for (var i = 0; i < last; ++i)
         {

@@ -33,6 +33,8 @@ public class NoAnimationManager : MonoBehaviour
         cubes[0].gameObject.SetActive(false);
         cubes[1].gameObject.SetActive(false);
         cubes[2].gameObject.SetActive(false);
+        cubes[3].gameObject.SetActive(false);
+        cubes[4].gameObject.SetActive(false);
         //cubes_noWire[0].gameObject.SetActive(false);
         //cubes_noWire[1].gameObject.SetActive(false);
         //cubes_noWire[2].gameObject.SetActive(false);
@@ -64,7 +66,7 @@ public class NoAnimationManager : MonoBehaviour
             //pair_noWire.gameObject.SetActive(false);
             num++;
             //when num reaches last cube, stop training
-            if (num == 3)
+            if (num == 5)
             {
                 training_start = false;
                 pairState.GetComponent<Text>().text = "";
