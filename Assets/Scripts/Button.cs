@@ -33,7 +33,7 @@ public class Button : MonoBehaviour
     public bool training_start = false;
 
     // data to save to csv file for data collection
-    struct TrialData
+    public struct TrialData
     {
         //public int trial;
         //public GameObject cube;
@@ -57,7 +57,7 @@ public class Button : MonoBehaviour
     }
 
     // linked list to store Trial data..
-    LinkedList<TrialData> dataList = new LinkedList<TrialData>();
+    public List<TrialData> dataList = new List<TrialData>();
     TrialData data;
 
     // Shubamb
@@ -124,19 +124,21 @@ public class Button : MonoBehaviour
             if(temp.Value.rightObject.gobject.transform.localScale.x * temp.Value.leftObject.gobject.transform.localScale.x == 1)
             {
                 data.reactionTime = update_time - curr_time;
-                data.correct = false;
-                Debug.Log("Wrong, reaction time : " + (data.reactionTime).ToString());
-                dataList.AddLast(data);
+                data.correct = true;
+                Debug.Log("Correct, reaction time : " + (data.reactionTime).ToString());
+                //dataList.Add(data);
                 buttonYes.GetComponent<Image>().color = Color.green;
             }
             else
             {
                 data.reactionTime = update_time - curr_time;
                 data.correct = false;
-                Debug.Log("Correct, reaction time : " + (data.reactionTime).ToString());
-                dataList.AddLast(data);
+                Debug.Log("Wrong, reaction time : " + (data.reactionTime).ToString());
+                //dataList.Add(data);
                 buttonYes.GetComponent<Image>().color = Color.red;
             }
+            // store trial data to list
+            dataList.Add(data);
 
             curr_time = update_time;
 
@@ -147,6 +149,9 @@ public class Button : MonoBehaviour
             if (temp == null)
             {
                 training_start = false;
+                // store data to csv
+                // this rewrites csv file if existing, if doesn't exist then create csv file
+                gameObject.GetComponent<ToCSV>().Save();
             }
             temp.Value.leftObject.gobject.gameObject.SetActive(true);
             temp.Value.leftObject.gobject.transform.rotation = Quaternion.Euler(0, temp.Value.leftObject.rotation_degree, 0);
@@ -174,14 +179,20 @@ public class Button : MonoBehaviour
 
             if (temp.Value.rightObject.gobject.transform.localScale.x * temp.Value.leftObject.gobject.transform.localScale.x == -1)
             {
-                Debug.Log("Correct, reaction time : " + (update_time - curr_time).ToString());
+                data.reactionTime = update_time - curr_time;
+                data.correct = true;
+                Debug.Log("Correct, reaction time : " + (data.reactionTime).ToString());
                 buttonNo.GetComponent<Image>().color = Color.green;
             }
             else
             {
-                Debug.Log("Wrong, reaction time : " + (update_time - curr_time).ToString());
+                data.reactionTime = update_time - curr_time;
+                data.correct = false;
+                Debug.Log("Wrong, reaction time : " + (data.reactionTime).ToString());
                 buttonNo.GetComponent<Image>().color = Color.red;
             }
+            // store trial data to list
+            dataList.Add(data);
 
             curr_time = update_time;
 
@@ -192,6 +203,9 @@ public class Button : MonoBehaviour
             if(temp==null)
             {
                 training_start = false;
+                // store data to csv
+                // this rewrites csv file if existing, if doesn't exist then create csv file
+                gameObject.GetComponent<ToCSV>().Save();
             }
             temp.Value.leftObject.gobject.gameObject.SetActive(true);
             temp.Value.leftObject.gobject.transform.rotation = Quaternion.Euler(0, temp.Value.leftObject.rotation_degree, 0);
