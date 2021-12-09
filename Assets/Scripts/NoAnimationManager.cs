@@ -98,7 +98,7 @@ public class NoAnimationManager : MonoBehaviour
     {
         pair = GameObject.Instantiate(cubes[num]);
         //pair_noWire = GameObject.Instantiate(cubes_noWire[num]);
-        pair.transform.position = new Vector3(3, 0, 6);
+        pair.transform.position = new Vector3(3, 0, 12);
         //pair_noWire.transform.position = new Vector3(3, 0, 6);
         // need to randomize mirrored and rotation
         // if mirrored is true, flip horizontally

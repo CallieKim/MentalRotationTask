@@ -30,13 +30,13 @@ public class Hand : MonoBehaviour
         // Down
         if(m_grabAction.GetStateDown(m_pose.inputSource))
         {
-            print(m_pose.inputSource + " Trigger Down");
+            //print(m_pose.inputSource + " Trigger Down");
             Pickup();
         }
         // Up
         if (m_grabAction.GetStateUp(m_pose.inputSource))
         {
-            print(m_pose.inputSource + " Trigger Up");
+            //print(m_pose.inputSource + " Trigger Up");
             Pickup();
         }
     }
@@ -53,7 +53,11 @@ public class Hand : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-
+        if (!other.gameObject.CompareTag("Interactable"))
+        {
+            return;
+        }
+        m_ContactInteractable.Remove(other.gameObject.GetComponent<Interactable>());
     }
 
     public void Pickup()
@@ -67,7 +71,7 @@ public class Hand : MonoBehaviour
         // already held check
         if (m_CurrentInteractable.m_ActiveHand)
         {
-            m_CurrentInteractable.m_ActiveHand.Drop();
+            //m_CurrentInteractable.m_ActiveHand.Drop();
         }
 
         // position to controller
