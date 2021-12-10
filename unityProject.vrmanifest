@@ -5,7 +5,7 @@
       "app_key": "application.generated.unity.mentalrotationtask.exe",
       "launch_type": "url",
       "url": "steam://launch/",
-      "action_manifest_path": "C:\\Users\\Yeping\\Desktop\\Callie\\Github\\MentalRotationTask\\Assets\\StreamingAssets\\SteamVR\\actions.json",
+      "action_manifest_path": "C:\\Users\\Yeping\\Documents\\Callie\\Github\\MentalRotationTask\\Assets\\StreamingAssets\\SteamVR\\actions.json",
       "strings": {
         "en_us": {
           "name": "MentalRotationTask [Testing]"
